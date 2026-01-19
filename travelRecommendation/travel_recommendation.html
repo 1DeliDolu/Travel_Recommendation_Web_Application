@@ -1,0 +1,667 @@
+<!-- travel_recommendation.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TravelBloom</title>
+
+    <style>
+      :root {
+        --nav-bg: rgba(15, 35, 35, 0.92);
+        --text: #e9f3f3;
+        --muted: #b9d6d6;
+        --teal: #0b6b68;
+        --teal-2: #0a5f5c;
+        --white: #ffffff;
+        --card: rgba(6, 20, 20, 0.55);
+        --stroke: rgba(255, 255, 255, 0.18);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #0d1f1f;
+        color: var(--text);
+        padding-top: 78px; /* space for fixed navbar */
+      }
+
+      /* Navbar */
+      header.navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: var(--nav-bg);
+        backdrop-filter: blur(6px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .nav-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: var(--text);
+        min-width: 190px;
+      }
+
+      .brand svg { width: 34px; height: 34px; flex: 0 0 auto; }
+
+      .brand span {
+        font-size: 22px;
+        font-weight: 700;
+        font-style: italic;
+        letter-spacing: 0.2px;
+      }
+
+      nav.nav-links {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        flex: 1;
+        justify-content: center;
+        min-width: 240px;
+      }
+
+      nav.nav-links a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 600;
+        opacity: 0.95;
+      }
+
+      nav.nav-links a:hover { text-decoration: underline; }
+
+      /* Search */
+      .nav-search {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 420px;
+        justify-content: flex-end;
+      }
+
+      form#searchForm {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+      }
+
+      .search-pill {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--white);
+        border-radius: 999px;
+        padding: 8px 12px;
+        box-shadow: 0 1px 10px rgba(0, 0, 0, 0.25);
+        min-width: 360px;
+      }
+
+      .search-icon { color: #0f2a2a; opacity: 0.75; font-size: 16px; user-select: none; }
+
+      #searchInput {
+        border: none;
+        outline: none;
+        width: 100%;
+        font-size: 14px;
+        background: transparent;
+      }
+
+      .btn {
+        border: none;
+        cursor: pointer;
+        padding: 9px 14px;
+        border-radius: 10px;
+        font-weight: 700;
+        color: var(--white);
+        background: var(--teal);
+      }
+      .btn:hover { background: var(--teal-2); }
+      .btn.secondary { background: var(--teal); opacity: 0.95; }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      /* Shared splash sections (Home + About + Contact) */
+      .splash {
+        position: relative;
+        min-height: calc(100vh - 78px);
+        display: flex;
+        align-items: center;
+        padding: 56px 18px;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+
+      .hero-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+        display: grid;
+        grid-template-columns: 56px 1fr;
+        gap: 26px;
+        align-items: center;
+      }
+
+      /* Social icons (left rail) */
+      .social-rail {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        padding-top: 10px;
+      }
+
+      .social-rail::before {
+        content: "";
+        display: block;
+        width: 2px;
+        height: 110px;
+        background: rgba(255, 255, 255, 0.55);
+        border-radius: 2px;
+        margin-bottom: 6px;
+      }
+
+      .social-rail a {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid var(--stroke);
+        transition: transform 0.15s ease, background 0.15s ease;
+        font-size: 18px;
+      }
+
+      .social-rail a:hover { transform: translateY(-2px); background: rgba(0, 0, 0, 0.35); }
+
+      /* Home */
+      #home.splash {
+        background-image: linear-gradient(
+            90deg,
+            rgba(8, 35, 35, 0.75) 0%,
+            rgba(8, 35, 35, 0.35) 45%,
+            rgba(8, 35, 35, 0.15) 100%
+          ),
+          url("https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=1920&q=80");
+      }
+
+      .hero-content { max-width: 720px; }
+
+      .hero-title {
+        margin: 0 0 18px 0;
+        font-weight: 900;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        line-height: 0.95;
+        font-size: clamp(44px, 6vw, 84px);
+        display: inline-block;
+        padding: 14px 16px;
+        border: 3px solid rgba(255, 255, 255, 0.75);
+        background: rgba(0, 0, 0, 0.18);
+      }
+
+      .hero-sub {
+        margin: 0 0 22px 0;
+        max-width: 520px;
+        font-size: 15px;
+        line-height: 1.6;
+        color: var(--text);
+        padding: 14px 16px;
+        border-left: 4px solid rgba(255, 255, 255, 0.7);
+        background: rgba(0, 0, 0, 0.25);
+      }
+
+      .book-btn {
+        display: inline-block;
+        padding: 12px 22px;
+        border-radius: 12px;
+        background: var(--teal);
+        color: var(--white);
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+      .book-btn:hover { background: var(--teal-2); }
+
+      /* About */
+      #about.splash {
+        background-image: linear-gradient(
+            90deg,
+            rgba(8, 35, 35, 0.80) 0%,
+            rgba(8, 35, 35, 0.42) 55%,
+            rgba(8, 35, 35, 0.22) 100%
+          ),
+          url("https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=1920&q=80");
+      }
+
+      .about-wrap { width: 100%; }
+
+      .about-title {
+        margin: 0 0 18px 0;
+        font-weight: 900;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        line-height: 1;
+        font-size: clamp(48px, 6vw, 84px);
+        text-shadow: 0 10px 24px rgba(0,0,0,0.45);
+      }
+
+      .about-box {
+        background: var(--card);
+        border: 1px solid var(--stroke);
+        border-radius: 14px;
+        padding: 16px 18px;
+        max-width: 980px;
+        line-height: 1.6;
+        color: var(--text);
+        box-shadow: 0 12px 26px rgba(0, 0, 0, 0.25);
+      }
+
+      .about-box p { margin: 0; }
+
+      .team-area {
+        margin-top: 26px;
+        background: rgba(0,0,0,0.18);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 14px;
+        padding: 22px 18px;
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: 18px;
+        align-items: center;
+        max-width: 980px;
+      }
+
+      .team-heading {
+        font-weight: 900;
+        font-size: clamp(40px, 4vw, 64px);
+        line-height: 0.95;
+        letter-spacing: 0.2px;
+        text-shadow: 0 10px 24px rgba(0,0,0,0.45);
+      }
+
+      .team-cards {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(180px, 1fr));
+        gap: 14px;
+      }
+
+      .team-card {
+        background: rgba(12, 30, 30, 0.55);
+        border: 1px solid var(--stroke);
+        border-radius: 14px;
+        padding: 14px 14px 12px 14px;
+        box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+        min-height: 150px;
+      }
+
+      .member-top {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+
+      .avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: rgba(11, 107, 104, 0.35);
+        border: 1px solid rgba(255,255,255,0.14);
+        display: grid;
+        place-items: center;
+        font-size: 16px;
+      }
+
+      .member-name {
+        font-weight: 800;
+        margin: 0;
+        font-size: 15px;
+      }
+
+      .member-desc {
+        margin: 6px 0 12px 0;
+        color: rgba(233,243,243,0.9);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .role-pill {
+        display: inline-block;
+        padding: 8px 12px;
+        border-radius: 12px;
+        background: rgba(30, 80, 150, 0.55);
+        border: 1px solid rgba(255,255,255,0.14);
+        color: var(--white);
+        font-weight: 800;
+        font-size: 12px;
+        text-align: center;
+        min-width: 92px;
+      }
+
+      /* =========================
+         Task 5: Contact Us
+         ========================= */
+      #contact.splash {
+        background-image: linear-gradient(
+            90deg,
+            rgba(8, 35, 35, 0.82) 0%,
+            rgba(8, 35, 35, 0.45) 55%,
+            rgba(8, 35, 35, 0.20) 100%
+          ),
+          url("https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=1920&q=80");
+      }
+
+      .contact-wrap {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 18px;
+        align-items: center;
+      }
+
+      .contact-title {
+        margin: 0 0 10px 0;
+        font-weight: 900;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        line-height: 1;
+        font-size: clamp(48px, 6vw, 84px);
+        text-shadow: 0 10px 24px rgba(0,0,0,0.45);
+      }
+
+      .contact-sub {
+        margin: 0;
+        color: rgba(233,243,243,0.9);
+        font-size: 14px;
+      }
+
+      .contact-card {
+        background: rgba(0, 0, 0, 0.18);
+        border: 1px solid rgba(255,255,255,0.14);
+        border-radius: 14px;
+        padding: 18px;
+        max-width: 860px;
+      }
+
+      .form-row { margin-bottom: 14px; }
+
+      .form-row label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+
+      .form-row input,
+      .form-row textarea {
+        width: 100%;
+        padding: 12px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.10);
+        color: var(--text);
+        outline: none;
+      }
+
+      .form-row input::placeholder,
+      .form-row textarea::placeholder { color: rgba(233,243,243,0.55); }
+
+      .form-row textarea {
+        min-height: 140px;
+        resize: vertical;
+      }
+
+      .submit-wide {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        background: var(--teal);
+        color: var(--white);
+        font-weight: 900;
+      }
+      .submit-wide:hover { background: var(--teal-2); }
+
+      /* Responsive */
+      @media (max-width: 980px) {
+        .nav-inner { flex-wrap: wrap; justify-content: center; }
+        .brand { min-width: unset; }
+        nav.nav-links { order: 3; width: 100%; justify-content: center; padding-top: 6px; }
+        .nav-search { min-width: unset; width: 100%; justify-content: center; }
+        .search-pill { min-width: min(520px, 90vw); }
+
+        .hero-inner { grid-template-columns: 1fr; gap: 18px; }
+        .social-rail { flex-direction: row; justify-content: flex-start; }
+        .social-rail::before { display: none; }
+
+        .team-area { grid-template-columns: 1fr; }
+        .team-cards { grid-template-columns: 1fr; }
+
+        .contact-wrap { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <header class="navbar">
+      <div class="nav-inner">
+        <a class="brand" href="#home" aria-label="TravelBloom Home">
+          <svg
+            viewBox="0 0 64 64"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M52.8 9.6c-1.5-1.5-4.1-1.5-5.6 0L26.5 30.3l-10.6-4.1c-1.2-.5-2.6-.2-3.6.8l-3 3
+              12.1 8.8L14 52.2l3.3 3.3 13.4-7.4 8.8 12.1 3-3c1-1 1.3-2.4.8-3.6l-4.1-10.6 20.7-20.7c1.5-1.5 1.5-4.1 0-5.6Z"
+              fill="white"
+              opacity="0.95"
+            />
+          </svg>
+          <span>TravelBloom</span>
+        </a>
+
+        <nav class="nav-links" aria-label="Primary">
+          <a href="#home">Home</a>
+          <a href="#about">About Us</a>
+          <a href="#contact">Contact Us</a>
+        </nav>
+
+        <!-- Search area (hidden on About/Contact to match note) -->
+        <div class="nav-search" id="navSearchArea">
+          <form id="searchForm" action="#" autocomplete="off">
+            <label class="sr-only" for="searchInput">Search recommendations</label>
+
+            <div class="search-pill">
+              <span class="search-icon" aria-hidden="true">🔍</span>
+              <input
+                id="searchInput"
+                type="text"
+                placeholder="Enter a destination or keyword"
+              />
+            </div>
+
+            <button id="searchBtn" class="btn" type="submit">Search</button>
+            <button id="resetBtn" class="btn secondary" type="button">Clear</button>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Task 3: Home -->
+      <section id="home" class="splash" aria-label="Home">
+        <div class="hero-inner">
+          <div class="social-rail" aria-label="Social media">
+            <a href="#" aria-label="Twitter">🐦</a>
+            <a href="#" aria-label="Facebook">f</a>
+            <a href="#" aria-label="Instagram">⌁</a>
+            <a href="#" aria-label="YouTube">▶</a>
+          </div>
+
+          <div class="hero-content">
+            <h1 class="hero-title">
+              EXPLORE<br />
+              DREAM<br />
+              DESTINATION
+            </h1>
+
+            <p class="hero-sub">
+              TravelBloom helps you discover unforgettable places—embrace diverse
+              cultures, landscapes, and experiences while finding a destination
+              that sparks curiosity and wonder.
+            </p>
+
+            <a class="book-btn" href="#contact">BOOK NOW</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Task 4: About Us -->
+      <section id="about" class="splash" aria-label="About Us">
+        <div class="hero-inner">
+          <div class="social-rail" aria-label="Social media">
+            <a href="#" aria-label="Twitter">🐦</a>
+            <a href="#" aria-label="Facebook">f</a>
+            <a href="#" aria-label="Instagram">⌁</a>
+            <a href="#" aria-label="YouTube">▶</a>
+          </div>
+
+          <div class="about-wrap">
+            <h2 class="about-title">ABOUT US</h2>
+
+            <div class="about-box">
+              <p>
+                Welcome to TravelBloom! We are a team of passionate individuals dedicated to
+                helping travelers discover inspiring destinations around the world.
+                Our mission is to promote cultural exploration, memorable experiences, and
+                stress-free planning—always putting our customers first while working together
+                to deliver exceptional recommendations.
+              </p>
+            </div>
+
+            <div class="team-area" aria-label="Our team">
+              <div class="team-heading">Our<br />Team</div>
+
+              <div class="team-cards">
+                <article class="team-card">
+                  <div class="member-top">
+                    <div class="avatar" aria-hidden="true">👤</div>
+                    <p class="member-name">John Doe</p>
+                  </div>
+                  <p class="member-desc">John is responsible for guiding strategy and ensuring a great customer experience.</p>
+                  <span class="role-pill">CEO</span>
+                </article>
+
+                <article class="team-card">
+                  <div class="member-top">
+                    <div class="avatar" aria-hidden="true">👤</div>
+                    <p class="member-name">Celina Thomas</p>
+                  </div>
+                  <p class="member-desc">Celina leads the team and coordinates delivery to keep everything running smoothly.</p>
+                  <span class="role-pill">Team Lead</span>
+                </article>
+
+                <article class="team-card">
+                  <div class="member-top">
+                    <div class="avatar" aria-hidden="true">👤</div>
+                    <p class="member-name">Mike Tysen</p>
+                  </div>
+                  <p class="member-desc">Mike oversees operations and helps scale our recommendations and content quality.</p>
+                  <span class="role-pill">Delivery Head</span>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Task 5: Contact Us -->
+      <section id="contact" class="splash" aria-label="Contact Us">
+        <div class="hero-inner">
+          <div class="social-rail" aria-label="Social media">
+            <a href="#" aria-label="Twitter">🐦</a>
+            <a href="#" aria-label="Facebook">f</a>
+            <a href="#" aria-label="Instagram">⌁</a>
+            <a href="#" aria-label="YouTube">▶</a>
+          </div>
+
+          <div class="contact-wrap">
+            <div>
+              <h2 class="contact-title">CONTACT US</h2>
+              <p class="contact-sub">Get in touch</p>
+            </div>
+
+            <div class="contact-card">
+              <form id="contactForm" action="#">
+                <div class="form-row">
+                  <label for="nameInput">Name</label>
+                  <input id="nameInput" type="text" placeholder="your name" required />
+                </div>
+
+                <div class="form-row">
+                  <label for="emailInput">Email</label>
+                  <input
+                    id="emailInput"
+                    type="email"
+                    placeholder="your email"
+                    required
+                  />
+                </div>
+
+                <div class="form-row">
+                  <label for="messageInput">Message</label>
+                  <textarea
+                    id="messageInput"
+                    placeholder="your message"
+                    required
+                  ></textarea>
+                </div>
+
+                <button class="submit-wide" type="submit">Submit</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+   
+    <script src="./travel_recommendation.js" defer></script>
+  </body>
+</html>
